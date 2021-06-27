@@ -1,0 +1,54 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'maven'
+}
+
+apply plugin: 'java'
+
+group 'uk.gov.hmcts.fodscanner'
+
+// tag::repositories[]
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+// end::repositories[]
+
+task Jar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'fortify-on-demand-client',
+                'Implementation-Version': '1.0',
+                'Main-Class': 'uk.gov.hmcts.fodscanner.FodScanMainApp'
+    }
+
+    baseName = "fortify-on-demand-client"
+
+    into('/lib') {
+        from 'lib'
+    }
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+}
+// end::dependencies[]
+
+compileJava {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+test {
+    useJUnitPlatform()
+}

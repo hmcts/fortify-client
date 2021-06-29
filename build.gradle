@@ -48,13 +48,7 @@ jar {
 //    from sourceSets.main.allSource
 //}
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 task fatJar(type: Jar) {
-    classifier = 'fat'
 
     manifest {
         attributes 'Implementation-Title': 'fortify-on-demand-client',
@@ -98,7 +92,6 @@ test {
 }
 
 artifacts {
-    archives javadocJar
     archives fatJar
 }
 
@@ -106,7 +99,6 @@ publishing {
     publications {
         Main(MavenPublication) {
             from components.java
-            artifact javadocJar
             artifact fatJar
             groupId project.group
             artifactId 'fortify-on-demand-client'

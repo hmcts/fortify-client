@@ -28,3 +28,5 @@ jobs:
 
         PACKAGES_URL="https://jitpack.io/com/github/${GITHUB_REPOSITORY}/${GITHUB_REF#refs/tags/}/"
         echo ${PACKAGES_URL}
+        PACKAGES_FILE="packages.txt"
+        touch ${PACKAGES_FILE}

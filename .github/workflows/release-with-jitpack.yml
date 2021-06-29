@@ -33,10 +33,4 @@ jobs:
         count=1
         until [[ $count -gt 6 ]] || grep -q build.log ${PACKAGES_FILE} ; do
           echo "Attempt ${count}/6"
-#          STATUS=$(curl -s -o packages.txt -w "%{http_code}" --max-time 900 ${PACKAGES_URL})
-#
-#          let count+=1
-#          if [[ "${STATUS}" -gt 399 ]]; then
-#            sleep 30
-#          fi
         done

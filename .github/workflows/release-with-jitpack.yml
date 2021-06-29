@@ -41,3 +41,4 @@ jobs:
             sleep 10
           fi
         done
+      if: startsWith(github.ref, 'refs/tags')

@@ -35,8 +35,9 @@ jobs:
           echo "Attempt ${count}/6"
           STATUS=$(curl -s -o packages.txt -w "%{http_code}" --max-time 900 ${PACKAGES_URL})
 
+          echo "${STATUS}
           let count+=1
           if [[ "${STATUS}" -gt 399 ]]; then
-            sleep 30
+            sleep 10
           fi
         done

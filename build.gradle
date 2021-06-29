@@ -51,6 +51,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     }
 
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

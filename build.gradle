@@ -44,7 +44,11 @@ jar {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    manifest {
+        attributes 'Implementation-Title': 'fortify-on-demand-client',
+                'Implementation-Version': '1.0',
+                'Main-Class': 'uk.gov.hmcts.fodscanner.FodScanMainApp'
+    }
 
     into('/lib') {
         from 'lib'

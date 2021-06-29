@@ -39,9 +39,6 @@ repositories {
 }
 // end::repositories[]
 
-jar {
-    baseName = "fortify-on-demand-client"
-}
 
 //task sourcesJar(type: Jar, dependsOn: classes) {
 //    classifier = 'sources'
@@ -49,6 +46,7 @@ jar {
 //}
 
 task fatJar(type: Jar) {
+    baseName = "fortify-on-demand-client"
 
     manifest {
         attributes 'Implementation-Title': 'fortify-on-demand-client',

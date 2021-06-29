@@ -1,4 +1,4 @@
-package uk.gov.hmcts.fodscanner;
+package com.github.hmcts;
 
 public enum FailureLevel {
     CRITICAL,

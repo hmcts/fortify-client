@@ -1,4 +1,4 @@
-package uk.gov.hmcts.fodscanner;
+package com.github.hmcts;
 
 import java.io.IOException;
 

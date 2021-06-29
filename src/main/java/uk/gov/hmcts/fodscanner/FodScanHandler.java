@@ -1,4 +1,4 @@
-package com.github.hmcts;
+package uk.gov.hmcts.fodscanner;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

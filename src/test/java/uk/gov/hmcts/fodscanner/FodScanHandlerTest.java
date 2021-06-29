@@ -1,6 +1,5 @@
-package com.github.hmcts;
+package uk.gov.hmcts.fodscanner;
 
-import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,4 +1,4 @@
-package com.github.hmcts;
+package uk.gov.hmcts.fodscanner;
 
 import java.io.*;
 import java.nio.file.*;

@@ -82,6 +82,8 @@ tasks.withType(Test) {
     }
 }
 
+sourceCompatibility = 11
+targetCompatibility = 11
 wrapper.gradleVersion = '2.10'
 
 dependencies {

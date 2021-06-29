@@ -113,7 +113,7 @@ publishing {
     publications {
         Main(MavenPublication) {
             from components.java
-            artifact sourcesJar
+           // artifact sourcesJar
             artifact javadocJar
             artifact fatJar
             groupId project.group

@@ -18,7 +18,7 @@ public class ScanReport {
     private static final Logger log = LoggerFactory.getLogger(ScanReport.class);
 
     public static final File DEFAULT_HTML_FILE = new File(
-            "." + File.separator + "Fortify Reports" + File.separator + "ScanReport.html");
+            "." + File.separator + "Fortify Reports" + File.separator + "FortifyScanReport.html");
 
     private final Map<Severity, Integer> counts;
     private FortifyClientConfig clientConfig;

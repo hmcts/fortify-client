@@ -1,20 +1,21 @@
 package uk.gov.hmcts.fortifyclient;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FolderZipper {
@@ -22,12 +23,12 @@ public class FolderZipper {
     private static final String FOLDER_REGEX = ".*(\\\\|/)%s(\\\\|/).*";
     private static final String FILE_REGEX = ".*\\.(%s)$";
 
-    public String zip(final String sourcePath, final String[] excludePatterns) throws Exception {
+    public String zip(final File sourceFolder, final String[] excludePatterns) throws Exception {
 
-        Path source = Paths.get(sourcePath.trim());
+        Path source = sourceFolder.toPath();
 
         if (!Files.isDirectory(source)) {
-            throw new IllegalArgumentException("Please provide a folder. Source : " + sourcePath);
+            throw new IllegalArgumentException("Please provide a folder. Source : " + sourceFolder);
         }
 
         String zipFileName = buildZipFileName(source);

@@ -1,16 +1,20 @@
 package uk.gov.hmcts.fortifyclient;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class FortifyClient {
+
+    private static final int ROOT_FOLDER_LOOKUP_MAX_DEPTH = 3;
 
     private final FortifyClientConfig configuration;
 
@@ -48,7 +52,12 @@ public class FortifyClient {
         String osName = System.getProperty("os.name").toLowerCase();
 
         log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
-        String rootDirectory = findRootDirectory(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c echo %cd%" : "pwd").trim(), circuitBreaker);
+
+        File currentDir = new File(".");
+        File rootDirectory = findRootDirectory(currentDir, ROOT_FOLDER_LOOKUP_MAX_DEPTH);
+        if (rootDirectory == null) {
+            rootDirectory = currentDir;
+        }
         log.debug("Root directory has been selected : " + rootDirectory);
         String zipFileName = new FolderZipper().zip(rootDirectory, configuration.getExcludePatterns());
         log.info("Folder zipped into file : " + zipFileName);
@@ -58,22 +67,19 @@ public class FortifyClient {
 
     }
 
-    int circuitBreaker = 250;
 
-    private String findRootDirectory(final String rootDirectory, int circuitBreaker) {
-        String tempRootDirectoryWithGithub = rootDirectory+File.separator+".github";
-        String tempRootDirectoryWithGit = rootDirectory+File.separator+".git";
+    private File findRootDirectory(final File findFrom, int depth) {
+        if (depth < 0) {
+            return null;
+        }
+        
+        File githubFolder = new File(findFrom.toString() + File.separator + ".github");
+        File gitFolder = new File(findFrom.toString() + File.separator + ".git");
 
-        if (Files.exists(Paths.get(tempRootDirectoryWithGit)) || Files.exists(Paths.get(tempRootDirectoryWithGithub))) {
-            return rootDirectory;
+        if (gitFolder.exists() || githubFolder.exists()) {
+            return findFrom;
         } else {
-            int lastIndexOfSlash = rootDirectory.lastIndexOf(File.separator);
-            if (lastIndexOfSlash == -1 || circuitBreaker <= 0) {
-                throw new RuntimeException("Couldn't find the root directory!");
-            }
-
-            String reducedRootDirectory = rootDirectory.substring(0, lastIndexOfSlash);
-            return findRootDirectory(reducedRootDirectory, --circuitBreaker);
+            return findRootDirectory(findFrom.getParentFile(), depth - 1);
         }
     }
 

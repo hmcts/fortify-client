@@ -2,6 +2,8 @@ package uk.gov.hmcts.fortifyclient;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+
 class FolderZipperTest {
 
     @Test
@@ -9,11 +11,8 @@ class FolderZipperTest {
 
         FortifyClientConfig config = FortifyClientConfig.getNewDefaultInstance();
 
-        String osName = System.getProperty("os.name").toLowerCase();
-        String rootDirectory = CommandRunner.run(osName.startsWith("windows")?"cmd.exe /c echo %cd%":"pwd").trim();
-
         FolderZipper zipper = new FolderZipper();
-        zipper.zip(rootDirectory, config.getExcludePatterns());
+        zipper.zip(new File("."), config.getExcludePatterns());
     }
 
 }

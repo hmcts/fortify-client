@@ -89,7 +89,8 @@ public class ScanReport {
         fileContent = fileContent.replace("[High]", "" + getCountOf(Severity.HIGH));
         fileContent = fileContent.replace("[Medium]", "" + getCountOf(Severity.MEDIUM));
         fileContent = fileContent.replace("[Low]", "" + getCountOf(Severity.LOW));
-        fileContent = fileContent.replace("[PortalLink]", "" + clientConfig.getPortalUrl());
+        fileContent = fileContent.replace("[PortalLink]",
+                "" + clientConfig.getPortalUrl() + "/Releases/" + clientConfig.getReleaseId() + "/Overview");
         fileContent = fileContent.replace("[ReleaseId]", "" + clientConfig.getReleaseId());
         fileContent = fileContent.replace("[ExcludePatterns]", "" + Arrays.asList(clientConfig.getExcludePatterns()));
         fileContent = fileContent

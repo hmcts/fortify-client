@@ -45,7 +45,7 @@ public class FortifyClient {
             throw new FortifyClientException(errorReport);
         }
 
-        return ScanReport.fromConsoleReport(consoleReport);
+        return ScanReport.fromConsoleReport(configuration, consoleReport);
     }
 
     private String buildZipFile() throws Exception {
@@ -87,7 +87,8 @@ public class FortifyClient {
         return new String[] { "java", "-jar", configuration.getRequired("fortify.jar.path"),
                 "-portalurl", configuration.getRequired("fortify.portal.url"),
                 "-apiurl",
-                configuration.getRequired("fortify.api.url"), "-userCredentials",
+                configuration.getPortalUrl(),
+                "-userCredentials",
                 configuration
                         .getUsername(),
                 configuration.getPassword(), "-tenantCode", configuration.getRequired(

@@ -1,5 +1,11 @@
 package uk.gov.hmcts.fortifyclient;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -7,13 +13,20 @@ import java.util.regex.Pattern;
 
 public class ScanReport {
 
-    private final Map<Severity, Integer> counts;
+    public static final File DEFAULT_HTML_FILE = new File(
+            "." + File.separator + "Fortify Reports" + File.separator + "ScanReport.html");
 
-    public ScanReport(Map<Severity, Integer> counts) {
+    private final Map<Severity, Integer> counts;
+    private FortifyClientConfig clientConfig;
+
+    public ScanReport(FortifyClientConfig clientConfig, Map<Severity, Integer> counts) {
+        this.clientConfig = clientConfig;
         this.counts = counts;
     }
 
-    public static ScanReport fromConsoleReport(final String consoleReport) {
+    public static ScanReport fromConsoleReport(
+            final FortifyClientConfig clientConfig,
+            final String consoleReport) {
         String regexPattern = "(?<=%ss: )(.*)(?=\\n|\\r)";
         Map<Severity, Integer> counts = new HashMap<>();
 
@@ -26,7 +39,11 @@ public class ScanReport {
             }
         }
 
-        return new ScanReport(counts);
+        return new ScanReport(clientConfig, counts);
+    }
+
+    public FortifyClientConfig getClientConfig() {
+        return clientConfig;
     }
 
     public int getCountOf(Severity severity) {
@@ -57,5 +74,32 @@ public class ScanReport {
         return "ScanReport{" +
                 "counts=" + counts +
                 '}';
+    }
+
+    public void printToDefaultHtml() throws Exception {
+        printToHtml(DEFAULT_HTML_FILE);
+    }
+
+    public void printToHtml(File file) throws Exception {
+        String fileContent = IOUtils.toString(
+                this.getClass().getClassLoader()
+                        .getResourceAsStream("ReportTemplate.html"),
+                Charset.defaultCharset());
+        fileContent = fileContent.replace("[Critical]", "" + getCountOf(Severity.CRITICAL));
+        fileContent = fileContent.replace("[High]", "" + getCountOf(Severity.HIGH));
+        fileContent = fileContent.replace("[Medium]", "" + getCountOf(Severity.MEDIUM));
+        fileContent = fileContent.replace("[Low]", "" + getCountOf(Severity.LOW));
+        fileContent = fileContent.replace("[PortalLink]", "" + clientConfig.getPortalUrl());
+        fileContent = fileContent.replace("[ReleaseId]", "" + clientConfig.getReleaseId());
+        fileContent = fileContent.replace("[ExcludePatterns]", "" + Arrays.asList(clientConfig.getExcludePatterns()));
+        fileContent = fileContent
+                .replace("[UnacceptableSeverity]",
+                "" + Arrays.asList(clientConfig.getUnacceptableSeverity()));
+        fileContent = fileContent
+                .replace("[AcceptableStatus]",
+                        isSuccessful(clientConfig.getUnacceptableSeverity()) ? "Yes, successful." : "No, failed.");
+        if (file.exists())
+            file.createNewFile();
+        FileUtils.write(file, fileContent, Charset.defaultCharset());
     }
 }

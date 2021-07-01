@@ -8,6 +8,7 @@ public class FortifyClientEnvironment {
     public final static String FORTIFY_UNACCEPTABLE_SEVERITY = "FORTIFY_UNACCEPTABLE_SEVERITY";
     public final static String FORTIFY_EXCLUDE_PATTERN = "FORTIFY_EXCLUDE_PATTERN";
     public final static String GIT_URL = "GIT_URL";
+    public static final String FORTIFY_PORTAL_URL = "FORTIFY_PORTAL_URL";
 
     public static String getOptionalVariable(String name) {
         return System.getenv(name);

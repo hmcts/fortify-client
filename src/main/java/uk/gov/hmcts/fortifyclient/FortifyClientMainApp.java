@@ -11,6 +11,7 @@ public class FortifyClientMainApp {
         ScanReport report = null;
         try {
             report = fortifyClient.requestScanAndGetResults();
+            report.printToDefaultHtml();
 
             boolean failed = report.hasAnyIssuesAtOrAbove(config.getUnacceptableSeverity());
 

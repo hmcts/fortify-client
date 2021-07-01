@@ -1,12 +1,24 @@
 package uk.gov.hmcts.fortifyclient;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ScanReportTest {
+
+    static FortifyClientConfig clientConfig = null;
+    static {
+        try {
+            clientConfig = FortifyClientConfig.getNewDefaultInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     void should_parseReport_return_successful_result() {
@@ -23,7 +35,7 @@ class ScanReportTest {
                 "https://emea.fortify.com/Redirect/Releases/65430\n" +
                 "Pass/Fail status: Passed\n" +
                 "Retiring Token : Token Retired Successfully";
-        ScanReport resultOfScanReport = ScanReport.fromConsoleReport(report);
+        ScanReport resultOfScanReport = ScanReport.fromConsoleReport(clientConfig, report);
         for (Severity severity : Severity.values()) {
             assertEquals(1, resultOfScanReport.getCountOf(severity));
         }
@@ -32,7 +44,7 @@ class ScanReportTest {
     @Test
     void should_hasAnyIssuesAtOrAbove_return_checks() {
         Map<Severity, Integer> counts = new HashMap<>();
-        ScanReport scanReport = new ScanReport(counts);
+        ScanReport scanReport = new ScanReport(clientConfig, counts);
         counts.put(Severity.CRITICAL, 1);
         counts.put(Severity.HIGH, 0);
         counts.put(Severity.MEDIUM, 0);
@@ -46,7 +58,7 @@ class ScanReportTest {
     @Test
     void should_isSuccessful_return_check() {
         Map<Severity, Integer> counts = new HashMap<>();
-        ScanReport scanReport = new ScanReport(counts);
+        ScanReport scanReport = new ScanReport(clientConfig, counts);
         counts.put(Severity.CRITICAL, 0);
         counts.put(Severity.HIGH, 0);
         counts.put(Severity.MEDIUM, 1);
@@ -56,5 +68,17 @@ class ScanReportTest {
         assertTrue(scanReport.isSuccessful(Severity.HIGH));
         assertFalse(scanReport.isSuccessful(Severity.MEDIUM));
         assertFalse(scanReport.isSuccessful(Severity.LOW));
+    }
+
+    @Test
+    void should_generate_html() throws Exception {
+        Map<Severity, Integer> counts = new HashMap<>();
+        ScanReport scanReport = new ScanReport(clientConfig, counts);
+        counts.put(Severity.CRITICAL, 3);
+        counts.put(Severity.HIGH, 5);
+        counts.put(Severity.MEDIUM, 1);
+        counts.put(Severity.LOW, 6);
+        scanReport.printToDefaultHtml();
+
     }
 }

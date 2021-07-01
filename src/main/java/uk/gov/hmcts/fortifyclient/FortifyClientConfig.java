@@ -94,4 +94,8 @@ public class FortifyClientConfig {
         return excludePattern.split(Pattern.quote("|"));
     }
 
+    public String getPortalUrl() {
+        return getValueFor(FortifyClientEnvironment.FORTIFY_PORTAL_URL, "fortify.portal.url");
+    }
+
 }

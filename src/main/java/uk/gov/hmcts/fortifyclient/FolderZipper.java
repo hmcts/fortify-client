@@ -1,5 +1,6 @@
 package uk.gov.hmcts.fortifyclient;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+@Slf4j
 public class FolderZipper {
 
     private static final String FOLDER_REGEX = ".*(\\\\|/)%s(\\\\|/).*";
@@ -32,7 +34,7 @@ public class FolderZipper {
 
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFileName))) {
 
-            System.out.println("The exclude pattern to be applied : " + Arrays.toString(excludePatterns));
+            log.info("The exclude pattern to be applied : " + Arrays.toString(excludePatterns));
 
             Files.walkFileTree(source, new SimpleFileVisitor<>() {
                 @Override

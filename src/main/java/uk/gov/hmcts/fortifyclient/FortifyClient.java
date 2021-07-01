@@ -1,14 +1,15 @@
 package uk.gov.hmcts.fortifyclient;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Slf4j
 public class FortifyClient {
 
     private final FortifyClientConfig configuration;
@@ -23,17 +24,17 @@ public class FortifyClient {
         String zipFileName = buildZipFile();
         String[] fortifyScanArgs = buildScanArgs(zipFileName);
 
-        System.out.println("Fortify scan is starting...");
+        log.info("About to request a Fortify scan for the zipped content of the repository...");
         Process proc = Runtime.getRuntime().exec(fortifyScanArgs);
-        System.out.println("Fortify scan has been started...");
+        log.info("Fortify scan has been requested. Awaiting results...");
         proc.waitFor();
         InputStream in = proc.getInputStream();
         InputStream err = proc.getErrorStream();
 
         String consoleReport = IOUtils.toString(in, Charset.defaultCharset());
 
-        System.out.println("Fortify scan call has been completed with exit code:" + proc.exitValue());
-        System.out.println("Console report: " + consoleReport);
+        log.info("Fortify scan call has been completed with exit code:" + proc.exitValue());
+        log.info("Console report: " + consoleReport);
 
         if (proc.exitValue() != 0) {
             String errorReport = IOUtils.toString(err, Charset.defaultCharset());
@@ -46,14 +47,12 @@ public class FortifyClient {
     private String buildZipFile() throws Exception {
         String osName = System.getProperty("os.name").toLowerCase();
 
-        System.out.println(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
-        System.out.println("================");
+        log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
         String rootDirectory = findRootDirectory(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c echo %cd%" : "pwd").trim(), circuitBreaker);
+        log.debug("Root directory has been selected : " + rootDirectory);
         String zipFileName = new FolderZipper().zip(rootDirectory, configuration.getExcludePatterns());
-        System.out.println("Folder zipped into file : " + zipFileName);
-
-        System.out.println(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
-        System.out.println("================");
+        log.info("Folder zipped into file : " + zipFileName);
+        log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
 
         return zipFileName;
 
@@ -72,7 +71,6 @@ public class FortifyClient {
             if (lastIndexOfSlash == -1 || circuitBreaker <= 0) {
                 throw new RuntimeException("Couldn't find the root directory!");
             }
-            System.out.println(circuitBreaker);
 
             String reducedRootDirectory = rootDirectory.substring(0, lastIndexOfSlash);
             return findRootDirectory(reducedRootDirectory, --circuitBreaker);

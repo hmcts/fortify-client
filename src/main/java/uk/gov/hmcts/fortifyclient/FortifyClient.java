@@ -51,7 +51,7 @@ public class FortifyClient {
 
         log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
 
-        File currentDir = new File(".");
+        File currentDir = new File(".").getAbsoluteFile().getCanonicalFile();
         File rootDirectory = findRootDirectory(currentDir, ROOT_FOLDER_LOOKUP_MAX_DEPTH);
         if (rootDirectory == null) {
             rootDirectory = currentDir;
@@ -66,8 +66,8 @@ public class FortifyClient {
     }
 
 
-    private File findRootDirectory(final File findFrom, int depth) {
-        if (depth < 0) {
+    File findRootDirectory(final File findFrom, int depth) {
+        if (depth < 0 || findFrom == null) {
             return null;
         }
         

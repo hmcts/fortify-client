@@ -1,7 +1,5 @@
 package uk.gov.hmcts.fortifyclient;
 
-import org.apache.commons.lang3.Validate;
-
 public class FortifyClientEnvironment {
 
     public final static String FORTIFY_USER_NAME = "FORTIFY_USER_NAME";

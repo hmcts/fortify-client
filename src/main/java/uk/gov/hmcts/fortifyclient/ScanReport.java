@@ -2,6 +2,8 @@ package uk.gov.hmcts.fortifyclient;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -12,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScanReport {
+
+    private static final Logger log = LoggerFactory.getLogger(ScanReport.class);
 
     public static final File DEFAULT_HTML_FILE = new File(
             "." + File.separator + "Fortify Reports" + File.separator + "ScanReport.html");
@@ -99,8 +103,11 @@ public class ScanReport {
         fileContent = fileContent
                 .replace("[AcceptableStatus]",
                         isSuccessful(clientConfig.getUnacceptableSeverity()) ? "Yes, successful." : "No, failed.");
+        file = file.getAbsoluteFile().getCanonicalFile();
         if (file.exists())
             file.createNewFile();
+        log.info("Generating report file {}...", file);
         FileUtils.write(file, fileContent, Charset.defaultCharset());
+        log.info("Generated report file {}.", file);
     }
 }

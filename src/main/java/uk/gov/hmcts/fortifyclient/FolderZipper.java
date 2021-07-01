@@ -15,13 +15,15 @@ import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class FolderZipper {
 
     private static final String FOLDER_REGEX = ".*(\\\\|/)%s(\\\\|/).*";
     private static final String FILE_REGEX = ".*\\.(%s)$";
+
+    private static final Logger log = LoggerFactory.getLogger(FolderZipper.class);
 
     public String zip(final File sourceFolder, final String[] excludePatterns) throws Exception {
 
@@ -35,7 +37,7 @@ public class FolderZipper {
 
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFileName))) {
 
-            log.info("The exclude pattern to be applied : " + Arrays.toString(excludePatterns));
+            log.info("The exclude pattern to be applied : {}", Arrays.toString(excludePatterns));
 
             Files.walkFileTree(source, new SimpleFileVisitor<>() {
                 @Override
@@ -47,7 +49,7 @@ public class FolderZipper {
                     try (FileInputStream fis = new FileInputStream(file.toFile())) {
                         Path targetFile = source.relativize(file);
 
-                        System.out.printf("File targeted : %s%n", file);
+                        log.debug("File targeted : {}", file);
                         if (!excludeFile(file.toString(), excludePatterns)
                                 && !targetFile.toString().contains(zipFileName)) {
                             zos.putNextEntry(new ZipEntry(targetFile.toString()));
@@ -59,20 +61,20 @@ public class FolderZipper {
                             }
                             zos.closeEntry();
 
-                            System.out.printf("File zipped : %s%n", file);
+                            log.debug("File zipped : {}", file);
                         } else {
-                            System.out.printf("File excluded : %s%n", file);
+                            log.debug("File excluded : {}", file);
                         }
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error("Error:", e);
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) {
-                    System.err.printf("Unable to zip : %s%n%s%n", file, exc);
+                    log.error("Unable to zip : {}", file, exc);
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -95,14 +97,14 @@ public class FolderZipper {
         for (String pattern : excludePatterns) {
             if (pattern.charAt(0) == '/') {
                 if (fileName.matches(String.format(FOLDER_REGEX, pattern.replaceFirst("/", "")))) {
-                    System.out.printf("File : %s matched with pattern : %s%n", fileName, pattern);
+                    log.debug("File : {} matched with pattern : {}", fileName, pattern);
                     return true;
                 }
             }
 
             if (pattern.startsWith("*.")) {
                 if (fileName.matches(String.format(FILE_REGEX, pattern.replace("*.", "")))) {
-                    System.out.printf("File : %s matched with pattern : %s%n", fileName, pattern);
+                    log.debug("File : {} matched with pattern : {}", fileName, pattern);
                     return true;
                 }
             }

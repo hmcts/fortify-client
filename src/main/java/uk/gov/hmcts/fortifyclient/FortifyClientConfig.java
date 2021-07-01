@@ -97,5 +97,4 @@ public class FortifyClientConfig {
     public String getPortalUrl() {
         return getValueFor(FortifyClientEnvironment.FORTIFY_PORTAL_URL, "fortify.portal.url");
     }
-
 }

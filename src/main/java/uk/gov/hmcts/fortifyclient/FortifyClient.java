@@ -2,6 +2,8 @@ package uk.gov.hmcts.fortifyclient;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -9,13 +11,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class FortifyClient {
-
+    private static final Logger log = LoggerFactory.getLogger(FortifyClient.class);
     private static final int ROOT_FOLDER_LOOKUP_MAX_DEPTH = 3;
-
     private final FortifyClientConfig configuration;
 
     public FortifyClient(FortifyClientConfig configuration) {
@@ -85,10 +83,10 @@ public class FortifyClient {
 
     private String[] buildScanArgs(String zipFileName) {
         return new String[] { "java", "-jar", configuration.getRequired("fortify.jar.path"),
-                "-portalurl", configuration.getRequired("fortify.portal.url"),
+                "-portalurl", configuration
+                        .getPortalUrl(),
                 "-apiurl",
-                configuration.getPortalUrl(),
-                "-userCredentials",
+                configuration.getRequired("fortify.api.url"), "-userCredentials",
                 configuration
                         .getUsername(),
                 configuration.getPassword(), "-tenantCode", configuration.getRequired(

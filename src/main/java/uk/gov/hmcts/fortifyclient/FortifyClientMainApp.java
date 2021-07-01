@@ -1,6 +1,10 @@
 package uk.gov.hmcts.fortifyclient;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FortifyClientMainApp {
+    private static final Logger log = LoggerFactory.getLogger(FortifyClientMainApp.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -16,16 +20,15 @@ public class FortifyClientMainApp {
             boolean failed = report.hasAnyIssuesAtOrAbove(config.getUnacceptableSeverity());
 
             if (failed) {
-                System.out.println("Scan has been failed at severity : " + config.getUnacceptableSeverity());
+                log.error("Scan has been failed at severity : {}", config.getUnacceptableSeverity());
                 System.exit(1);
             }
         } catch (Exception e) {
-            System.out.print(e.getMessage());
+            log.error("Error:", e);
             e.printStackTrace();
             System.exit(2);
         }
 
-        System.out.println("Scan has been completed successfully. Scan Report: \n" + report);
-
+        log.info("Scan has been completed successfully. Scan Report: {}\n", report);
     }
 }

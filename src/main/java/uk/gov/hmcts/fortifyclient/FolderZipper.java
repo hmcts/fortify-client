@@ -49,7 +49,7 @@ public class FolderZipper {
                     try (FileInputStream fis = new FileInputStream(file.toFile())) {
                         Path targetFile = source.relativize(file);
 
-                        log.debug("File targeted : {}", file);
+                        log.info("File targeted : {}", file);
                         if (!excludeFile(file.toString(), excludePatterns)
                                 && !targetFile.toString().contains(zipFileName)) {
                             zos.putNextEntry(new ZipEntry(targetFile.toString()));
@@ -61,9 +61,9 @@ public class FolderZipper {
                             }
                             zos.closeEntry();
 
-                            log.debug("File zipped : {}", file);
+                            log.info("File zipped : {}", file);
                         } else {
-                            log.debug("File excluded : {}", file);
+                            log.info("File excluded : {}", file);
                         }
 
                     } catch (IOException e) {
@@ -97,14 +97,14 @@ public class FolderZipper {
         for (String pattern : excludePatterns) {
             if (pattern.charAt(0) == '/') {
                 if (fileName.matches(String.format(FOLDER_REGEX, pattern.replaceFirst("/", "")))) {
-                    log.debug("File : {} matched with pattern : {}", fileName, pattern);
+                    log.info("File : {} matched with pattern : {}", fileName, pattern);
                     return true;
                 }
             }
 
             if (pattern.startsWith("*.")) {
                 if (fileName.matches(String.format(FILE_REGEX, pattern.replace("*.", "")))) {
-                    log.debug("File : {} matched with pattern : {}", fileName, pattern);
+                    log.info("File : {} matched with pattern : {}", fileName, pattern);
                     return true;
                 }
             }

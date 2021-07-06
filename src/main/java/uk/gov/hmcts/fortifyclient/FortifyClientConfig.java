@@ -85,7 +85,7 @@ public class FortifyClientConfig {
     }
 
     public Severity getUnacceptableSeverity() {
-        return Severity.valueOf(getValueFor(FortifyClientEnvironment.FORTIFY_UNACCEPTABLE_SEVERITY,"fortify.client.unacceptableSeverity"));
+        return Severity.valueOf(getValueFor(FortifyClientEnvironment.FORTIFY_UNACCEPTABLE_SEVERITY, "fortify.client.unacceptableSeverity"));
     }
 
     public String[] getExcludePatterns() {
@@ -96,5 +96,9 @@ public class FortifyClientConfig {
 
     public String getPortalUrl() {
         return getValueFor(FortifyClientEnvironment.FORTIFY_PORTAL_URL, "fortify.portal.url");
+    }
+
+    public String getExportDirectory() {
+        return getValueFor(FortifyClientEnvironment.FORTIFY_EXPORT_DIRECTORY, "fortify.export.dir");
     }
 }

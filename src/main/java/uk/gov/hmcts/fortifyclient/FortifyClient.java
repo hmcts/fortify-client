@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FortifyClient {
@@ -35,8 +37,8 @@ public class FortifyClient {
 
         String consoleReport = IOUtils.toString(in, Charset.defaultCharset());
 
-        log.info("Fortify scan call has been completed with exit code:" + proc.exitValue());
-        log.info("Console report: " + consoleReport);
+        log.info("Fortify scan call has been completed with exit code:{}", proc.exitValue());
+        log.info("Console report: {}", consoleReport);
 
         if (proc.exitValue() != 0) {
             String errorReport = IOUtils.toString(err, Charset.defaultCharset());
@@ -47,22 +49,17 @@ public class FortifyClient {
     }
 
     private String buildZipFile() throws Exception {
-        String osName = System.getProperty("os.name").toLowerCase();
-
-        log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
-
         File currentDir = new File(".").getAbsoluteFile().getCanonicalFile();
         File rootDirectory = findRootDirectory(currentDir, ROOT_FOLDER_LOOKUP_MAX_DEPTH);
         if (rootDirectory == null) {
             rootDirectory = currentDir;
         }
-        log.debug("Root directory has been selected : " + rootDirectory);
-        String zipFileName = new FolderZipper().zip(rootDirectory, configuration.getExcludePatterns());
-        log.info("Folder zipped into file : " + zipFileName);
-        log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
+        log.debug("Root directory has been selected : {}", rootDirectory);
+        String zipFileName = new FolderZipper().zip(rootDirectory, getFortifyExportDirectory(), configuration.getExcludePatterns());
+        long bytes = Files.size(Paths.get(zipFileName));
+        log.info("Folder zipped into file : {} with {} bytes", zipFileName, bytes);
 
         return zipFileName;
-
     }
 
 
@@ -70,9 +67,9 @@ public class FortifyClient {
         if (depth < 0 || findFrom == null) {
             return null;
         }
-        
-        File githubFolder = new File(findFrom.toString() + File.separator + ".github");
-        File gitFolder = new File(findFrom.toString() + File.separator + ".git");
+
+        File githubFolder = new File(findFrom + File.separator + ".github");
+        File gitFolder = new File(findFrom + File.separator + ".git");
 
         if (gitFolder.exists() || githubFolder.exists()) {
             return findFrom;
@@ -82,20 +79,16 @@ public class FortifyClient {
     }
 
     private String[] buildScanArgs(String zipFileName) {
-        return new String[] { "java", "-jar", configuration.getRequired("fortify.jar.path"),
-                "-portalurl", configuration
-                        .getPortalUrl(),
-                "-apiurl",
-                configuration.getRequired("fortify.api.url"), "-userCredentials",
-                configuration
-                        .getUsername(),
-                configuration.getPassword(), "-tenantCode", configuration.getRequired(
-                        "fortify.tenant.code"),
-                "-zipLocation", "./" + zipFileName, "-releaseId", configuration
-                        .getReleaseId(),
+        return new String[]{"java", "-jar", configuration.getRequired("fortify.jar.path"),
+                "-portalurl", configuration.getPortalUrl(),
+                "-apiurl", configuration.getRequired("fortify.api.url"),
+                "-userCredentials", configuration.getUsername(), configuration.getPassword(),
+                "-tenantCode", configuration.getRequired("fortify.tenant.code"),
+                "-zipLocation", "./" + zipFileName,
+                "-releaseId", configuration.getReleaseId(),
                 "-entitlementPreferenceType", configuration.getRequired("fortify.entitlementpreferencetype"),
                 "-inProgressScanActionType", configuration.getRequired("fortify.inprogressscanactiontype"),
-                "-pollingInterval", configuration.getRequired("fortify.pollinginterval") };
+                "-pollingInterval", configuration.getRequired("fortify.pollinginterval")};
     }
 
     private synchronized void exportFortifyJar() throws Exception {
@@ -115,4 +108,12 @@ public class FortifyClient {
         FileUtils.copyInputStreamToFile(stream, targetFile);
     }
 
+    public File getFortifyExportDirectory() throws IOException {
+        Path path = Paths.get(configuration.getExportDirectory());
+        if (!Files.exists(path)) {
+            Files.createDirectory(path);
+        }
+
+        return path.toFile();
+    }
 }

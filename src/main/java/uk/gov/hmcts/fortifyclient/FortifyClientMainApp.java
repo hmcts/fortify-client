@@ -15,7 +15,7 @@ public class FortifyClientMainApp {
         ScanReport report = null;
         try {
             report = fortifyClient.requestScanAndGetResults();
-            report.printToDefaultHtml();
+            report.printToDefaultHtml(fortifyClient.getFortifyExportDirectory());
 
             boolean failed = report.hasAnyIssuesAtOrAbove(config.getUnacceptableSeverity());
 
@@ -25,7 +25,6 @@ public class FortifyClientMainApp {
             }
         } catch (Exception e) {
             log.error("Error:", e);
-            e.printStackTrace();
             System.exit(2);
         }
 

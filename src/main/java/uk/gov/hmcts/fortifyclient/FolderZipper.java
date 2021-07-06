@@ -22,6 +22,7 @@ public class FolderZipper {
 
     private static final String FOLDER_REGEX = ".*(\\\\|/)%s(\\\\|/).*";
     private static final String FILE_REGEX = ".*\\.(%s)$";
+    private static final String ZIP_FILE_SUFFIX =  "_fortify_target";
 
     private static final Logger log = LoggerFactory.getLogger(FolderZipper.class);
 
@@ -88,8 +89,9 @@ public class FolderZipper {
         if (StringUtils.isNotBlank(zipFileName)) {
             zipFileName = zipFileName.substring(zipFileName.lastIndexOf("/") + 1, zipFileName.indexOf(".git")) + ".zip";
         } else {
-            zipFileName = sourcePath.getFileName() + ".zip";
+            zipFileName = sourcePath.getFileName() + ZIP_FILE_SUFFIX + ".zip";
         }
+
         return zipFileName;
     }
 

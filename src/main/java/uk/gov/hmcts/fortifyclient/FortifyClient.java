@@ -47,10 +47,6 @@ public class FortifyClient {
     }
 
     private String buildZipFile() throws Exception {
-        String osName = System.getProperty("os.name").toLowerCase();
-
-        log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
-
         File currentDir = new File(".").getAbsoluteFile().getCanonicalFile();
         File rootDirectory = findRootDirectory(currentDir, ROOT_FOLDER_LOOKUP_MAX_DEPTH);
         if (rootDirectory == null) {
@@ -59,10 +55,8 @@ public class FortifyClient {
         log.debug("Root directory has been selected : " + rootDirectory);
         String zipFileName = new FolderZipper().zip(rootDirectory, configuration.getExcludePatterns());
         log.info("Folder zipped into file : " + zipFileName);
-        log.debug(CommandRunner.run(osName.startsWith("windows") ? "cmd.exe /c dir" : "ls -lt"));
 
         return zipFileName;
-
     }
 
 
@@ -70,9 +64,9 @@ public class FortifyClient {
         if (depth < 0 || findFrom == null) {
             return null;
         }
-        
-        File githubFolder = new File(findFrom.toString() + File.separator + ".github");
-        File gitFolder = new File(findFrom.toString() + File.separator + ".git");
+
+        File githubFolder = new File(findFrom + File.separator + ".github");
+        File gitFolder = new File(findFrom + File.separator + ".git");
 
         if (gitFolder.exists() || githubFolder.exists()) {
             return findFrom;
@@ -82,20 +76,16 @@ public class FortifyClient {
     }
 
     private String[] buildScanArgs(String zipFileName) {
-        return new String[] { "java", "-jar", configuration.getRequired("fortify.jar.path"),
-                "-portalurl", configuration
-                        .getPortalUrl(),
-                "-apiurl",
-                configuration.getRequired("fortify.api.url"), "-userCredentials",
-                configuration
-                        .getUsername(),
-                configuration.getPassword(), "-tenantCode", configuration.getRequired(
-                        "fortify.tenant.code"),
-                "-zipLocation", "./" + zipFileName, "-releaseId", configuration
-                        .getReleaseId(),
+        return new String[]{"java", "-jar", configuration.getRequired("fortify.jar.path"),
+                "-portalurl", configuration.getPortalUrl(),
+                "-apiurl", configuration.getRequired("fortify.api.url"),
+                "-userCredentials", configuration.getUsername(), configuration.getPassword(),
+                "-tenantCode", configuration.getRequired("fortify.tenant.code"),
+                "-zipLocation", "./" + zipFileName,
+                "-releaseId", configuration.getReleaseId(),
                 "-entitlementPreferenceType", configuration.getRequired("fortify.entitlementpreferencetype"),
                 "-inProgressScanActionType", configuration.getRequired("fortify.inprogressscanactiontype"),
-                "-pollingInterval", configuration.getRequired("fortify.pollinginterval") };
+                "-pollingInterval", configuration.getRequired("fortify.pollinginterval")};
     }
 
     private synchronized void exportFortifyJar() throws Exception {

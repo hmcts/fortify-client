@@ -85,7 +85,7 @@ public class FortifyClientConfig {
     }
 
     public Severity getUnacceptableSeverity() {
-        return Severity.valueOf(getValueFor(FortifyClientEnvironment.FORTIFY_UNACCEPTABLE_SEVERITY,"fortify.client.unacceptableSeverity"));
+        return Severity.valueOf(getValueFor(FortifyClientEnvironment.FORTIFY_UNACCEPTABLE_SEVERITY, "fortify.client.unacceptableSeverity"));
     }
 
     public String[] getExcludePatterns() {

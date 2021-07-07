@@ -72,13 +72,16 @@ class ScanReportTest {
 
     @Test
     void should_generate_html() throws Exception {
+        FortifyClientConfig config = FortifyClientConfig.getNewDefaultInstance();
+        FortifyClient fortifyClient = new FortifyClient(config);
+
         Map<Severity, Integer> counts = new HashMap<>();
         ScanReport scanReport = new ScanReport(clientConfig, counts);
         counts.put(Severity.CRITICAL, 3);
         counts.put(Severity.HIGH, 5);
         counts.put(Severity.MEDIUM, 1);
         counts.put(Severity.LOW, 6);
-        scanReport.printToDefaultHtml();
+        scanReport.printToDefaultHtml(fortifyClient.getFortifyExportDirectory());
 
     }
 }

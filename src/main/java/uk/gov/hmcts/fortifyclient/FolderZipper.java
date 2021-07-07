@@ -25,7 +25,7 @@ public class FolderZipper {
 
     private static final Logger log = LoggerFactory.getLogger(FolderZipper.class);
 
-    public String zip(final File sourceFolder, final String[] excludePatterns) throws Exception {
+    public String zip(final File sourceFolder, final File exportFolder, final String[] excludePatterns) throws Exception {
 
         Path source = sourceFolder.toPath();
 
@@ -33,7 +33,7 @@ public class FolderZipper {
             throw new IllegalArgumentException("Please provide a folder. Source : " + sourceFolder);
         }
 
-        String zipFileName = buildZipFileName(source);
+        String zipFileName = exportFolder + "/" + buildZipFileName(source);
 
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFileName))) {
 
@@ -49,7 +49,7 @@ public class FolderZipper {
                     try (FileInputStream fis = new FileInputStream(file.toFile())) {
                         Path targetFile = source.relativize(file);
 
-                        log.debug("File targeted : {}", file);
+                        log.info("File targeted : {}", file);
                         if (!excludeFile(file.toString(), excludePatterns)
                                 && !targetFile.toString().contains(zipFileName)) {
                             zos.putNextEntry(new ZipEntry(targetFile.toString()));
@@ -61,9 +61,9 @@ public class FolderZipper {
                             }
                             zos.closeEntry();
 
-                            log.debug("File zipped : {}", file);
+                            log.info("File zipped : {}", file);
                         } else {
-                            log.debug("File excluded : {}", file);
+                            log.info("File excluded : {}", file);
                         }
 
                     } catch (IOException e) {
@@ -90,6 +90,7 @@ public class FolderZipper {
         } else {
             zipFileName = sourcePath.getFileName() + ".zip";
         }
+
         return zipFileName;
     }
 

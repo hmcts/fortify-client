@@ -8,20 +8,18 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScanReport {
 
     private static final Logger log = LoggerFactory.getLogger(ScanReport.class);
-
-    public static final File DEFAULT_HTML_FILE = new File(
-            "." + File.separator + "Fortify Reports" + File.separator + "FortifyScanReport.html");
-
     private final Map<Severity, Integer> counts;
-    private FortifyClientConfig clientConfig;
+    private final FortifyClientConfig clientConfig;
 
     public ScanReport(FortifyClientConfig clientConfig, Map<Severity, Integer> counts) {
         this.clientConfig = clientConfig;
@@ -37,17 +35,12 @@ public class ScanReport {
         for (Severity severity : Severity.values()) {
             Matcher matcher = Pattern.compile(String.format(regexPattern, severity.toString().toLowerCase())).matcher(consoleReport);
             while (matcher.find()) {
-                int matchResult;
-                matchResult = Integer.parseInt(matcher.group(1).trim());
+                int matchResult = Integer.parseInt(matcher.group(1).trim());
                 counts.put(severity, matchResult);
             }
         }
 
         return new ScanReport(clientConfig, counts);
-    }
-
-    public FortifyClientConfig getClientConfig() {
-        return clientConfig;
     }
 
     public int getCountOf(Severity severity) {
@@ -80,14 +73,14 @@ public class ScanReport {
                 '}';
     }
 
-    public void printToDefaultHtml() throws Exception {
-        printToHtml(DEFAULT_HTML_FILE);
+    public void printToDefaultHtml(File fortifyExportDirectory) throws Exception {
+        printToHtml(new File("." + File.separator + fortifyExportDirectory + File.separator + "FortifyScanReport.html"));
     }
 
     public void printToHtml(File file) throws Exception {
         String fileContent = IOUtils.toString(
-                this.getClass().getClassLoader()
-                        .getResourceAsStream("ReportTemplate.html"),
+                Objects.requireNonNull(this.getClass().getClassLoader()
+                        .getResourceAsStream("ReportTemplate.html")),
                 Charset.defaultCharset());
         fileContent = fileContent.replace("[Critical]", "" + getCountOf(Severity.CRITICAL));
         fileContent = fileContent.replace("[High]", "" + getCountOf(Severity.HIGH));
@@ -99,7 +92,7 @@ public class ScanReport {
         fileContent = fileContent.replace("[ExcludePatterns]", "" + Arrays.asList(clientConfig.getExcludePatterns()));
         fileContent = fileContent
                 .replace("[UnacceptableSeverity]",
-                "" + Arrays.asList(clientConfig.getUnacceptableSeverity()));
+                        "" + Collections.singletonList(clientConfig.getUnacceptableSeverity()));
         fileContent = fileContent
                 .replace("[AcceptableStatus]",
                         isSuccessful(clientConfig.getUnacceptableSeverity()) ? "Yes, successful." : "No, failed.");

@@ -30,7 +30,7 @@ public class FortifyClient {
 
         log.info("About to request a Fortify scan for the zipped content of the repository...");
         Process proc = Runtime.getRuntime().exec(fortifyScanArgs);
-        log.info("Fortify scan has been requested. Awaiting results...");
+        log.info("Fortify scan has been requested for {}. Awaiting results...", configuration.getReleaseId());
         proc.waitFor();
         InputStream in = proc.getInputStream();
         InputStream err = proc.getErrorStream();

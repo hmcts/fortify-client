@@ -49,7 +49,7 @@ public class FolderZipper {
                     try (FileInputStream fis = new FileInputStream(file.toFile())) {
                         Path targetFile = source.relativize(file);
 
-                        log.info("File targeted : {}", file);
+                        log.debug("File targeted : {}", file);
                         if (!excludeFile(file.toString(), excludePatterns)
                                 && !targetFile.toString().contains(zipFileName)) {
                             zos.putNextEntry(new ZipEntry(targetFile.toString()));
@@ -61,9 +61,9 @@ public class FolderZipper {
                             }
                             zos.closeEntry();
 
-                            log.info("File zipped : {}", file);
+                            log.debug("File zipped : {}", file);
                         } else {
-                            log.info("File excluded : {}", file);
+                            log.debug("File excluded : {}", file);
                         }
 
                     } catch (IOException e) {

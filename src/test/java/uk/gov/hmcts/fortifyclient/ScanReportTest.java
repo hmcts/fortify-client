@@ -1,17 +1,16 @@
 package uk.gov.hmcts.fortifyclient;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class ScanReportTest {
 
     static FortifyClientConfig clientConfig = null;
+
     static {
         try {
             clientConfig = FortifyClientConfig.getNewDefaultInstance();
@@ -82,6 +81,13 @@ class ScanReportTest {
         counts.put(Severity.MEDIUM, 1);
         counts.put(Severity.LOW, 6);
         scanReport.printToDefaultHtml(fortifyClient.getFortifyExportDirectory());
+    }
 
+    @Test
+    void should_return_as_string() {
+        Map<Severity, Integer> counts = new HashMap<>();
+        ScanReport scanReport = new ScanReport(clientConfig, counts);
+        assertNotNull(scanReport.toString());
+        assertTrue(scanReport.toString() instanceof String);
     }
 }

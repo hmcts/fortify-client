@@ -65,11 +65,16 @@ targetCompatibility = 11
 wrapper.gradleVersion = '2.10'
 
 dependencies {
-    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.26'
+    compile group: 'uk.org.lidalia', name: 'slf4j-test', version: '1.2.0'
     testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.4'
+}
+
+configurations.all {
+    exclude module: 'slf4j-simple'
 }
 // end::dependencies[]
 

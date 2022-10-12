@@ -23,7 +23,7 @@ class FortifyClientTest {
     void should_fail_scan_with_wrong_credentials() throws Exception {
         Exception e = Assertions.assertThrows(FortifyClientException.class,
                 fortifyClient::requestScanAndGetResults);
-        assertTrue(e.getMessage().contains("code=401, message=Unauthorized"));
+        assertTrue(e.getMessage().contains("code=401"));
     }
 
     @Test

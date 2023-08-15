@@ -68,7 +68,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
     testImplementation 'org.hamcrest:hamcrest:2.2'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
     compile group: 'commons-io', name: 'commons-io', version: '2.13.0'
 }
 // end::dependencies[]

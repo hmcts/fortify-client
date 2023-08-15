@@ -1,7 +1,6 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'maven'
 }
 
 apply plugin: 'java'
@@ -39,11 +38,12 @@ repositories {
 // end::repositories[]
 
 jar {
-    baseName = "fortify-client"
+    archiveBaseName = "fortify-client"
 }
 
-task fatJar(type: Jar) {
-    classifier = 'all'
+tasks.register('fatJar', Jar) {
+    archiveClassifier = 'all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest {
         attributes 'Implementation-Title': 'fortify-client',
@@ -55,12 +55,9 @@ task fatJar(type: Jar) {
         from 'lib'
     }
 
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
-
-sourceCompatibility = 11
-targetCompatibility = 11
 
 wrapper.gradleVersion = '2.10'
 
@@ -68,8 +65,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
     testImplementation 'org.hamcrest:hamcrest:2.2'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
-    compile group: 'commons-io', name: 'commons-io', version: '2.13.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
 }
 // end::dependencies[]
 

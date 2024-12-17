@@ -62,7 +62,7 @@ tasks.register('fatJar', Jar) {
 wrapper.gradleVersion = '2.10'
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12'
     testImplementation 'org.hamcrest:hamcrest:3.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'

@@ -1,15 +1,13 @@
 plugins {
+    id 'java'
     id 'java-library'
     id 'maven-publish'
 }
 
-apply plugin: 'java'
-
 def buildNumber = System.getenv("RELEASE_VERSION")?.replace("refs/tags/", "") ?: "1.0.0"
 
-group 'com.github.hmcts'
-
-version buildNumber
+group = 'com.github.hmcts'
+version = buildNumber
 
 def gitRepo = "https://github.com/hmcts/fortify-client"
 
@@ -27,15 +25,11 @@ def pomConfig = {
     }
 }
 
-// tag::repositories[]
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url 'https://jitpack.io'
-    }
+    maven {url = 'https://jitpack.io'}
 }
-// end::repositories[]
 
 jar {
     archiveBaseName = "fortify-client"
@@ -59,16 +53,17 @@ tasks.register('fatJar', Jar) {
     with jar
 }
 
-wrapper.gradleVersion = '2.10'
-
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
-    testImplementation 'org.hamcrest:hamcrest:3.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
     implementation group: 'commons-io', name: 'commons-io', version: '2.18.0'
+
+    testImplementation 'org.hamcrest:hamcrest:3.0'
+    testImplementation(platform("org.junit:junit-bom:5.12.2"))
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
-// end::dependencies[]
 
 compileJava {
     options.annotationProcessorPath = configurations.annotationProcessor
@@ -87,9 +82,9 @@ publishing {
         Main(MavenPublication) {
             from components.java
             artifact fatJar
-            groupId project.group
-            artifactId 'fortify-client'
-            version project.version
+            groupId = project.group
+            artifactId = 'fortify-client'
+            version = project.version
 
             pom.withXml {
                 def root = asNode()

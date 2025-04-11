@@ -58,8 +58,9 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
     implementation group: 'commons-io', name: 'commons-io', version: '2.18.0'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
     testImplementation 'org.hamcrest:hamcrest:3.0'
+    testImplementation(platform("org.junit:junit-bom:5.12.2"))
+    testImplementation 'org.junit.jupiter:junit-jupiter'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

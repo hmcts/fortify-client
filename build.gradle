@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-def buildNumber = System.getenv("RELEASE_VERSION")?.replace("refs/tags/", "") ?: "1.0.0"
+def buildNumber = System.getenv("RELEASE_VERSION")?: "DEV-SNAPSHOT"
 
 group = 'com.github.hmcts'
 version = buildNumber
@@ -28,7 +28,6 @@ def pomConfig = {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {url = 'https://jitpack.io'}
 }
 
 jar {
@@ -92,6 +91,16 @@ publishing {
                 root.appendNode('name', 'Fortify Client')
                 root.appendNode('url', gitRepo)
                 root.children().last() + pomConfig
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "AzureArtifacts"
+            url = uri("https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1")
+            credentials {
+                username = System.getenv("AZURE_DEVOPS_ARTIFACT_USERNAME")
+                password = System.getenv("AZURE_DEVOPS_ARTIFACT_TOKEN")
             }
         }
     }
